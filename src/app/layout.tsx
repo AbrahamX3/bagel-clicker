@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import Loglib from "@loglib/tracker/react";
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
+import { Toaster } from "sonner";
 
-const inter = Inter({ subsets: ["latin"] });
+import { SiteFooter } from "~/components/footer";
+import SiteHeader from "~/components/header";
+import { ThemeProvider } from "~/components/theme-provider";
+
+import "~/styles/globals.css";
+import "~/styles/styles.css";
 
 export const metadata: Metadata = {
   title: "Bagel Clicker",
@@ -11,15 +18,33 @@ export const metadata: Metadata = {
     icon: "/bagel.webp",
   },
 };
-
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${GeistSans.variable} ${GeistMono.variable} font-sans`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+          </div>
+          <Loglib
+            config={{
+              id: "bagel",
+            }}
+          />
+          <Toaster richColors />
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
