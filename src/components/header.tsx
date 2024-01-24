@@ -15,7 +15,13 @@ export default function SiteHeader() {
       <div className="container flex h-[8vh] items-center justify-between">
         <div className="mr-4 md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Image src="/bagel.webp" alt="Bagel" width={32} height={32} />
+            <Image
+              src="/bagel.webp"
+              className="h-auto w-8"
+              alt="Bagel"
+              width={32}
+              height={32}
+            />
             <span className="flex items-center gap-2 align-middle font-bold">
               Bagel Clicker
             </span>
@@ -39,7 +45,7 @@ export default function SiteHeader() {
               >
                 <span className="sr-only">Abraham&apos;s Personal Website</span>
                 <Image
-                  alt="Abraham's Personal Website"
+                  alt="Personal Website"
                   src="/personal-icon.webp"
                   width={20}
                   height={20}

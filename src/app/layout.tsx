@@ -13,9 +13,20 @@ import "~/styles/styles.css";
 
 export const metadata: Metadata = {
   title: "Bagel Clicker",
-  description: "Created By AbrahamX3",
+  description: "Cookie clicker but with Bagels!",
+  metadataBase: new URL("https://bagel.abraham.lat"),
+  openGraph: {
+    images: "bagel-og.webp",
+    type: "website",
+    url: "https://bagel.abraham.lat",
+    title: "Bagel Clicker",
+    description: "Cookie clicker but with Bagels!",
+  },
+  manifest: "/manifest.json",
+  applicationName: "Bagel Clicker",
   icons: {
     icon: "/bagel.webp",
+    apple: "/bagel.webp",
   },
 };
 export default function RootLayout({

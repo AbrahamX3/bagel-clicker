@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useTheme } from "next-themes";
 
 import { type Upgrade } from "~/hooks/useBagel";
 import { cn } from "~/utils/cn";
@@ -10,6 +9,7 @@ interface BuildingProps {
   building: Upgrade;
   buildingId: number;
   bagels: number;
+  theme: string;
   handleBuyUpgrade: (buildingId: number, building: Upgrade) => void;
 }
 
@@ -18,9 +18,8 @@ export default function UpgradeButton({
   buildingId,
   bagels,
   handleBuyUpgrade,
+  theme,
 }: BuildingProps) {
-  const { resolvedTheme } = useTheme();
-
   const isDisabled = bagels <= building.current_cost;
 
   return (
@@ -33,10 +32,10 @@ export default function UpgradeButton({
       className={cn(
         "group/rays flex items-center rounded-lg  px-2 py-1 align-middle shadow ",
         "text-center backdrop-blur-md transition-colors duration-150 ease-in",
-        " text-neutral-950",
-        "dark:text-neutral-50",
+        "text-neutral-950",
+        "dark:border-zinc-600 dark:text-neutral-50",
         "bg-muted disabled:cursor-not-allowed disabled:bg-background disabled:dark:bg-neutral-900",
-        "border border-zinc-600 hover:border-zinc-300 disabled:hover:border-zinc-900 dark:hover:border-zinc-100",
+        "border border-zinc-300 hover:border-zinc-300 disabled:hover:border-zinc-900 hover:disabled:border-red-600 dark:hover:border-zinc-100",
       )}
       onClick={() => handleBuyUpgrade(buildingId, building)}
     >
@@ -46,10 +45,10 @@ export default function UpgradeButton({
           <p className="flex items-center gap-1 align-middle text-sm">
             <Image
               src="/bagel.webp"
-              className="h-4 w-4"
               width={30}
               height={30}
               alt="Bagel"
+              className="h-auto w-5"
             />
             {formatNumber(building.current_cost)}
           </p>
@@ -62,7 +61,7 @@ export default function UpgradeButton({
         <div
           className={cn(
             "rays absolute -inset-3 opacity-0 transition-opacity duration-200 ease-in",
-            resolvedTheme === "dark" ? "dark" : "",
+            theme === "dark" ? "dark" : "",
             !isDisabled ? "opacity-0 group-hover/rays:opacity-100" : "",
           )}
         />

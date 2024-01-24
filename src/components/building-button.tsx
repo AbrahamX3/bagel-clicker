@@ -26,11 +26,12 @@ export default function BuildingButton({
       key={building.name}
       disabled={bagels < building.current_cost}
       className={cn(
-        "group/lights flex items-center rounded-lg border border-neutral-300 text-neutral-950 shadow dark:border-neutral-200",
-        "dark:border-neutral-50/20 dark:text-neutral-50",
-        "bg-white px-2 py-1 text-center align-middle backdrop-blur-sm transition-colors duration-150 ease-in dark:bg-neutral-700",
-        "disabled:cursor-not-allowed disabled:bg-white/5 disabled:hover:border-slate-100/20",
-        "hover:border-slate-100/50",
+        "group/rays flex items-center rounded-lg  px-2 py-1 align-middle shadow ",
+        "text-center backdrop-blur-md transition-colors duration-150 ease-in",
+        "text-neutral-950",
+        "dark:border-zinc-600 dark:text-neutral-50",
+        "bg-muted disabled:cursor-not-allowed disabled:bg-background disabled:dark:bg-neutral-900",
+        "border border-zinc-300 hover:border-zinc-300 disabled:hover:border-zinc-900 hover:disabled:border-red-600 dark:hover:border-zinc-100",
       )}
       onClick={() => handleBuyBuilding(buildingId, building)}
     >
@@ -40,9 +41,9 @@ export default function BuildingButton({
           <p className="flex items-center gap-1 align-middle text-sm">
             <Image
               src="/bagel.webp"
-              className="h-4 w-4"
               width={30}
               height={30}
+              className="h-auto w-5"
               alt="Bagel"
             />
             {formatNumber(building.current_cost)}

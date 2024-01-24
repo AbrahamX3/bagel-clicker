@@ -1,16 +1,14 @@
 import { FrownIcon } from "lucide-react";
-import { useTheme } from "next-themes";
 
 import { cn } from "~/utils/cn";
 
-export default function NoUpgradeButton() {
-  const { resolvedTheme } = useTheme();
+export default function NoUpgradeButton({ theme }: { theme: string }) {
   return (
     <div
       className={cn(
-        "flex items-center rounded-lg border border-neutral-200 text-neutral-950 shadow",
-        "dark:border-neutral-50/20 dark:text-neutral-50",
-        "bg-neutral-950 p-4 text-center align-middle backdrop-blur-sm",
+        "flex items-center rounded-lg border border-neutral-200 bg-neutral-50/10 text-neutral-950 shadow",
+        "dark:border-neutral-50/20 dark:bg-neutral-950 dark:text-neutral-50",
+        "p-4 text-center align-middle backdrop-blur-sm",
       )}
     >
       <div className="relative z-10 flex flex-1 items-center justify-between gap-4 overflow-hidden align-middle">
@@ -21,7 +19,7 @@ export default function NoUpgradeButton() {
         <div
           className={cn(
             "rays absolute -inset-3 opacity-20 backdrop-blur-2xl transition-opacity duration-300 ease-in",
-            resolvedTheme === "dark" ? "dark" : "",
+            theme === "dark" ? "dark" : "",
           )}
         />
       </div>

@@ -18,7 +18,7 @@ export default function Bagel() {
           draggable={false}
           width={478}
           height={418}
-          className="aspect-square h-auto w-96"
+          className="h-auto w-full"
         />
       </div>
     </Atropos>

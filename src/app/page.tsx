@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { SaveIcon } from "lucide-react";
+import { FrownIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useHotkeys } from "react-hotkeys-hook";
 
 import Bagel from "~/components/bagel";
@@ -224,11 +225,11 @@ interface ClickIndicator {
 export default function Shell() {
   const saveTimer = useRef(0);
 
-  const [bagels, setBagels] = useState(999999);
+  const [bagels, setBagels] = useState(0);
   const [buildings, setBuildings] = useState<Building[]>(initialBuildings);
   const [perSecond, setPerSecond] = useState(0);
   const [clickIndicators, setClickIndicators] = useState<ClickIndicator[]>([]);
-
+  const { resolvedTheme = "dark" } = useTheme();
   const { loadBagels, saveBagels } = useBagel({
     bagels,
     buildings,
@@ -303,10 +304,6 @@ export default function Shell() {
     },
     [bagels],
   );
-
-  useEffect(() => {
-    console.log(buildings[0]?.upgrade);
-  }, [buildings]);
 
   const handleBuyUpgrade = useCallback(
     (buildingId: number, upgrade: Upgrade) => {
@@ -396,7 +393,7 @@ export default function Shell() {
     .some((upgrade) => upgrade.currentLevel >= upgrade.required_level);
 
   return (
-    <main className="container grid w-full flex-grow grid-cols-1 gap-4 overflow-y-auto py-4 md:grid-cols-3">
+    <main className="container grid w-full flex-grow grid-cols-1 gap-4 overflow-y-auto py-2 md:grid-cols-3">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
@@ -418,20 +415,24 @@ export default function Shell() {
               <Bagel />
             </button>
             <button
+              onClick={saveBagels}
               className={cn(
-                "group/lights flex w-full items-center rounded-lg border border-neutral-200 text-neutral-950 shadow",
-                "dark:border-neutral-50/20 dark:text-neutral-50",
-                "bg-neutral-950 p-2 text-center align-middle backdrop-blur-sm transition-colors duration-150 ease-in",
-                "hover:border-slate-100/50",
+                "flex items-center rounded-lg border border-neutral-200 bg-neutral-50/10 text-neutral-950 shadow hover:bg-neutral-50/40",
+                "dark:border-neutral-50/20 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900",
+                "w-full p-2 text-center align-middle backdrop-blur-sm transition-colors duration-150 ease-in-out",
               )}
-              onClick={() => saveBagels()}
             >
               <div className="relative z-10 flex flex-1 items-center justify-between gap-4 overflow-hidden align-middle">
                 <p className="font-semibold">Save bagels</p>
-                <SaveIcon className="h-4 w-4" />
+                <FrownIcon className="h-4 w-4" />
               </div>
               <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
-                <div className="rays absolute -inset-3 opacity-0 backdrop-blur-2xl transition-opacity duration-300 ease-in  group-hover/lights:opacity-80" />
+                <div
+                  className={cn(
+                    "rays absolute -inset-3 opacity-20 backdrop-blur-2xl transition-opacity duration-300 ease-in",
+                    resolvedTheme === "dark" ? "dark" : "",
+                  )}
+                />
               </div>
             </button>
           </div>
@@ -475,6 +476,7 @@ export default function Shell() {
                       upgrade.currentLevel >= upgrade.required_level &&
                       upgrade.currentLevel !== 0 && (
                         <UpgradeButton
+                          theme={resolvedTheme}
                           building={upgrade}
                           buildingId={index}
                           bagels={bagels}
@@ -484,7 +486,7 @@ export default function Shell() {
                       ),
                   )
               ) : (
-                <NoUpgradeButton />
+                <NoUpgradeButton theme={resolvedTheme} />
               )}
             </CardContent>
           </AnimatePresence>
