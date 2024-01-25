@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     apple: "/bagel.webp",
   },
 };
+
 export default function RootLayout({
   children,
 }: {

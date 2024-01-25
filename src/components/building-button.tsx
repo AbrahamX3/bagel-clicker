@@ -1,13 +1,14 @@
 import Image from "next/image";
+import { type Building } from "bagel";
 import { motion } from "framer-motion";
 
-import { type Building } from "~/hooks/useBagel";
 import { cn } from "~/utils/cn";
 import { formatNumber } from "~/utils/helpers";
 
-interface BuildingProps {
+interface BuildingButtonProps {
   building: Building;
   buildingId: number;
+  theme: string;
   bagels: number;
   handleBuyBuilding: (buildingId: number, building: Building) => void;
 }
@@ -16,22 +17,25 @@ export default function BuildingButton({
   building,
   buildingId,
   bagels,
+  theme,
   handleBuyBuilding,
-}: BuildingProps) {
+}: BuildingButtonProps) {
+  const isDisabled = bagels < building.current_cost;
+
   return (
     <motion.button
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       key={building.name}
-      disabled={bagels < building.current_cost}
+      disabled={isDisabled}
       className={cn(
-        "group/rays flex items-center rounded-lg  px-2 py-1 align-middle shadow ",
+        "group/rays flex items-center rounded-lg  px-2 py-1 align-middle  ",
         "text-center backdrop-blur-md transition-colors duration-150 ease-in",
         "text-neutral-950",
         "dark:border-zinc-600 dark:text-neutral-50",
         "bg-muted disabled:cursor-not-allowed disabled:bg-background disabled:dark:bg-neutral-900",
-        "border border-zinc-300 hover:border-zinc-300 disabled:hover:border-zinc-900 hover:disabled:border-red-600 dark:hover:border-zinc-100",
+        "border border-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-500",
       )}
       onClick={() => handleBuyBuilding(buildingId, building)}
     >
@@ -54,7 +58,13 @@ export default function BuildingButton({
         </div>
       </div>
       <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
-        <div className="rays absolute -inset-3 opacity-0 backdrop-blur-2xl transition-opacity duration-300 ease-in  group-hover/lights:opacity-90" />
+        <div
+          className={cn(
+            "rays absolute -inset-3 opacity-0 transition-opacity duration-200 ease-in",
+            theme === "dark" ? "dark" : "",
+            !isDisabled ? "opacity-0 group-hover/rays:opacity-100" : "",
+          )}
+        />
       </div>
     </motion.button>
   );

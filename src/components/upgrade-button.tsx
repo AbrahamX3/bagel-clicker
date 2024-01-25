@@ -1,11 +1,11 @@
 import Image from "next/image";
+import { type Upgrade } from "bagel";
 import { motion } from "framer-motion";
 
-import { type Upgrade } from "~/hooks/useBagel";
 import { cn } from "~/utils/cn";
 import { formatNumber, romanize } from "~/utils/helpers";
 
-interface BuildingProps {
+interface UpgradeButtonProps {
   building: Upgrade;
   buildingId: number;
   bagels: number;
@@ -19,8 +19,8 @@ export default function UpgradeButton({
   bagels,
   handleBuyUpgrade,
   theme,
-}: BuildingProps) {
-  const isDisabled = bagels <= building.current_cost;
+}: UpgradeButtonProps) {
+  const isDisabled = bagels < building.current_cost;
 
   return (
     <motion.button
@@ -30,12 +30,12 @@ export default function UpgradeButton({
       key={building.name}
       disabled={isDisabled}
       className={cn(
-        "group/rays flex items-center rounded-lg  px-2 py-1 align-middle shadow ",
+        "group/rays flex items-center rounded-lg  px-2 py-1 align-middle  ",
         "text-center backdrop-blur-md transition-colors duration-150 ease-in",
         "text-neutral-950",
         "dark:border-zinc-600 dark:text-neutral-50",
         "bg-muted disabled:cursor-not-allowed disabled:bg-background disabled:dark:bg-neutral-900",
-        "border border-zinc-300 hover:border-zinc-300 disabled:hover:border-zinc-900 hover:disabled:border-red-600 dark:hover:border-zinc-100",
+        "border border-zinc-300 hover:border-zinc-300 dark:hover:border-zinc-500",
       )}
       onClick={() => handleBuyUpgrade(buildingId, building)}
     >

@@ -1,10 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { type Building, type ClickIndicator, type SaveBagel, type Upgrade } from "bagel";
 import { AnimatePresence, motion } from "framer-motion";
-import { FrownIcon } from "lucide-react";
+import { SaveIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useHotkeys } from "react-hotkeys-hook";
+import { toast } from "sonner";
+import { useLocalStorage } from "usehooks-ts";
 
 import Bagel from "~/components/bagel";
 import BuildingButton from "~/components/building-button";
@@ -18,9 +21,10 @@ import {
 } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import UpgradeButton from "~/components/upgrade-button";
-import useBagel, { type Building, type Upgrade } from "~/hooks/useBagel";
 import { cn } from "~/utils/cn";
 import { formatNumber } from "~/utils/helpers";
+
+const LOCALSTORAGE_NAME = "bagel-clicker";
 
 const initialBuildings: Building[] = [
   {
@@ -215,37 +219,40 @@ const initialBuildings: Building[] = [
   },
 ];
 
-interface ClickIndicator {
-  id: number;
-  x: number;
-  y: number;
-  bagels: number;
-}
-
 export default function Shell() {
-  const saveTimer = useRef(0);
-
+  const gameSaveTimer = useRef(0);
+  const [loadGameSave, setGameSave] = useLocalStorage<SaveBagel>(
+    LOCALSTORAGE_NAME,
+    {
+      bagels: 0,
+      buildings: initialBuildings,
+    },
+  );
   const [bagels, setBagels] = useState(0);
   const [buildings, setBuildings] = useState<Building[]>(initialBuildings);
   const [perSecond, setPerSecond] = useState(0);
   const [clickIndicators, setClickIndicators] = useState<ClickIndicator[]>([]);
   const { resolvedTheme = "dark" } = useTheme();
-  const { loadBagels, saveBagels } = useBagel({
-    bagels,
-    buildings,
-  });
+
+  function saveTrigger() {
+    setGameSave({
+      bagels,
+      buildings,
+    });
+    toast.success("Bagels have been stored in the freezer!");
+  }
 
   useHotkeys("ctrl+s", (event) => {
     event.preventDefault();
-    saveBagels();
+    saveTrigger();
   });
 
   useEffect(() => {
-    if (loadBagels) {
-      setBuildings(loadBagels.buildings);
-      setBagels(loadBagels.bagels);
+    if (loadGameSave) {
+      setBuildings(loadGameSave.buildings);
+      setBagels(loadGameSave.bagels);
     }
-  }, [loadBagels]);
+  }, [loadGameSave]);
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -361,16 +368,16 @@ export default function Shell() {
     if (bagelsPerSecond > 0) {
       interval = setInterval(() => {
         handleAutoClick();
-        saveTimer.current += 1;
+        gameSaveTimer.current += 1;
       }, 1000);
     }
 
     return () => clearInterval(interval);
   }, [buildings, handleAutoClick]);
 
-  if (saveTimer.current === 20) {
-    saveTimer.current = 0;
-    saveBagels();
+  if (gameSaveTimer.current === 20) {
+    gameSaveTimer.current = 0;
+    saveTrigger();
   }
 
   useEffect(() => {
@@ -415,7 +422,7 @@ export default function Shell() {
               <Bagel />
             </button>
             <button
-              onClick={saveBagels}
+              onClick={saveTrigger}
               className={cn(
                 "flex items-center rounded-lg border border-neutral-200 bg-neutral-50/10 text-neutral-950 shadow hover:bg-neutral-50/40",
                 "dark:border-neutral-50/20 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900",
@@ -424,7 +431,7 @@ export default function Shell() {
             >
               <div className="relative z-10 flex flex-1 items-center justify-between gap-4 overflow-hidden align-middle">
                 <p className="font-semibold">Save bagels</p>
-                <FrownIcon className="h-4 w-4" />
+                <SaveIcon className="h-4 w-4" />
               </div>
               <div className="absolute inset-0 z-0 overflow-hidden rounded-md">
                 <div
@@ -502,6 +509,7 @@ export default function Shell() {
               {buildings.map((building) => (
                 <BuildingButton
                   building={building}
+                  theme={resolvedTheme}
                   buildingId={building.id}
                   bagels={bagels}
                   key={building.name}
