@@ -1,13 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { type Building, type ClickIndicator, type SaveBagel, type Upgrade } from "bagel";
+import { type Building, type ClickIndicator, type Upgrade } from "bagel";
 import { AnimatePresence, motion } from "framer-motion";
 import { SaveIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useHotkeys } from "react-hotkeys-hook";
-import { toast } from "sonner";
-import { useLocalStorage } from "usehooks-ts";
 
 import Bagel from "~/components/bagel";
 import BuildingButton from "~/components/building-button";
@@ -21,10 +19,9 @@ import {
 } from "~/components/ui/card";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import UpgradeButton from "~/components/upgrade-button";
+import useBagelStorage from "~/hooks/useBagel";
 import { cn } from "~/utils/cn";
 import { formatNumber } from "~/utils/helpers";
-
-const LOCALSTORAGE_NAME = "bagel-clicker";
 
 const initialBuildings: Building[] = [
   {
@@ -221,38 +218,28 @@ const initialBuildings: Building[] = [
 
 export default function Shell() {
   const gameSaveTimer = useRef(0);
-  const [loadGameSave, setGameSave] = useLocalStorage<SaveBagel>(
-    LOCALSTORAGE_NAME,
-    {
-      bagels: 0,
-      buildings: initialBuildings,
-    },
-  );
   const [bagels, setBagels] = useState(0);
   const [buildings, setBuildings] = useState<Building[]>(initialBuildings);
   const [perSecond, setPerSecond] = useState(0);
   const [clickIndicators, setClickIndicators] = useState<ClickIndicator[]>([]);
   const { resolvedTheme = "dark" } = useTheme();
 
-  function saveTrigger() {
-    setGameSave({
-      bagels,
-      buildings,
-    });
-    toast.success("Bagels have been stored in the freezer!");
-  }
+  const { loadBagels, saveBagels } = useBagelStorage({
+    bagels,
+    buildings,
+  });
 
   useHotkeys("ctrl+s", (event) => {
     event.preventDefault();
-    saveTrigger();
+    saveBagels();
   });
 
   useEffect(() => {
-    if (loadGameSave) {
-      setBuildings(loadGameSave.buildings);
-      setBagels(loadGameSave.bagels);
+    if (loadBagels) {
+      setBuildings(loadBagels.buildings);
+      setBagels(loadBagels.bagels);
     }
-  }, [loadGameSave]);
+  }, [loadBagels]);
 
   const handleClick = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -377,7 +364,7 @@ export default function Shell() {
 
   if (gameSaveTimer.current === 20) {
     gameSaveTimer.current = 0;
-    saveTrigger();
+    saveBagels();
   }
 
   useEffect(() => {
@@ -422,7 +409,7 @@ export default function Shell() {
               <Bagel />
             </button>
             <button
-              onClick={saveTrigger}
+              onClick={saveBagels}
               className={cn(
                 "flex items-center rounded-lg border border-neutral-200 bg-neutral-50/10 text-neutral-950 shadow hover:bg-neutral-50/40",
                 "dark:border-neutral-50/20 dark:bg-neutral-950 dark:text-neutral-50 dark:hover:bg-neutral-900",
